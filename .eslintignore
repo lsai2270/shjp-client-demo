@@ -1,0 +1,12 @@
+/lambda/
+/scripts
+/config
+.history
+public
+dist
+.umi
+mock
+pages/
+components
+layouts
+/src/tools.ts

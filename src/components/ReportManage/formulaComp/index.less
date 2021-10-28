@@ -1,0 +1,102 @@
+@import '~antd/es/style/themes/default.less';
+.container {
+  height: 350px;
+  padding: 15px 15px 0 15px;
+  // margin-bottom: 10px;
+
+  background: @component-background;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  ul,
+  li {
+    margin: 0;
+    padding: 0;
+  }
+}
+.flexBetween {
+  display: flex;
+  justify-content: space-between;
+}
+.iconStyle {
+  font-size: 18px;
+  opacity: 0.6;
+}
+.iconStyle:hover {
+  color: #1890ff;
+}
+.waringIcon {
+  color: #faad14;
+  font-size: 16px;
+}
+.successIcon {
+  color: #52c41a;
+  font-size: 16px;
+}
+.editContain {
+  margin-right: 20px;
+  //   cursor: pointer;
+}
+.editIcon {
+  font-size: 16px;
+  cursor: pointer;
+}
+.listItem {
+  display: flex;
+  // justify-content: space-between;
+  width: 100%;
+  height: 36px;
+  font-size: 15px;
+  line-height: 36px;
+}
+.formulaName {
+  display: inline-block;
+  width: 300px;
+  margin-left: 10px;
+  overflow: hidden; /* 内容超出宽度时隐藏超出部分的内容 */
+  white-space: nowrap; /* 不换行 */
+  text-overflow: ellipsis;
+}
+@media screen and (max-width: 1400px) {
+  .formulaName {
+    width: 180px;
+  }
+}
+@media screen and (min-width: 1400px) and (max-width: 1600px) {
+  .formulaName {
+    width: 230px;
+  }
+}
+.currentPageTitle {
+  width: 100%;
+  padding: 20px 10px;
+  color: rgba((0), 0, 0, 0.6);
+  font-size: larger;
+}
+.noDataformu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+}
+.catalogueTitle {
+  display: inline-block;
+  width: 100%;
+  overflow: hidden; /* 内容超出宽度时隐藏超出部分的内容 */
+  white-space: nowrap; /* 不换行 */
+  text-overflow: ellipsis;
+}
+.formulaModal {
+  :global {
+    .ant-pro-table-list-toolbar-container {
+      flex-direction: row-reverse !important;
+      padding-top: 0;
+    }
+    .ant-pro-table-search {
+      margin-bottom: 0;
+    }
+  }
+}
+.fomulaBox {
+  height: 200px;
+  padding: 10px;
+  overflow: auto;
+}

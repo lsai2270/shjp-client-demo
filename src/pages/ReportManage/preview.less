@@ -1,0 +1,129 @@
+@import '~antd/es/style/themes/default.less';
+.main {
+  width: 100%;
+  // background: @component-background;
+  :global {
+    .ant-pro-page-container-children-content {
+      margin: 0;
+    }
+    #contentContainer {
+      padding: 10px;
+      padding-top: 20px;
+      padding-bottom: 50px;
+      #editorContainer {
+        height: 785px;
+        .w-e-text-container {
+          height: 100% !important;
+        }
+        .w-e-text-container button,
+        .w-e-text-container input {
+          padding: 4px 15px;
+        }
+        .imgContainer {
+          -webkit-user-modify: read-only;
+        }
+      }
+      p {
+        margin: 0 !important;
+        font-size: 16px;
+        text-indent: 2em;
+        img {
+          display: block;
+          width: 65%;
+          margin: auto;
+        }
+      }
+      table tbody tr:nth-child(1) {
+        font-weight: bold;
+        background-color: #d9d9d9;
+      }
+    }
+    .jsx-parser textarea {
+      width: 95%;
+    }
+  }
+}
+.headGap {
+  margin-bottom: 10px;
+  padding: 15px 15px 0;
+  background: @component-background;
+}
+.rowGap {
+  margin-right: 10px;
+}
+.flexBetween {
+  display: flex;
+  justify-content: space-between;
+}
+.reportTitle {
+  display: flex;
+  align-items: center;
+  margin-right: 100px;
+}
+.bodyContent {
+  margin: 0 10px !important;
+}
+.contentContain {
+  width: 1000px;
+  height: 888px;
+  min-height: 888px;
+  margin-bottom: 10px;
+  padding: 15px;
+  overflow: auto;
+  background: @component-background;
+  input {
+    margin: 0 8px;
+  }
+  p {
+    line-height: 30px;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-align: left !important;
+  }
+  :global {
+    #x7sm6 p {
+      text-align: center;
+    }
+    #x7sm6 b {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  table {
+    width: 92%;
+    margin: 0 30px;
+    text-align: center;
+    border: 1px solid #000;
+    border-spacing: 0;
+  }
+  table tr {
+    border-bottom: 1px solid #000;
+  }
+  table td {
+    padding: 5px;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid#000;
+  }
+  table tr td:last-child {
+    border-right: 0;
+  }
+  table tr:last-child td {
+    border-bottom: 0;
+  }
+}
+.adviceContain {
+  width: 100%;
+}
+.editor {
+  width: 60%;
+  min-height: 1000px;
+  margin: 0 auto;
+}
+.reportStatus {
+  cursor: pointer;
+}

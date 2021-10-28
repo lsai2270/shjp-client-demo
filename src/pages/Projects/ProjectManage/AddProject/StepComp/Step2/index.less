@@ -1,0 +1,58 @@
+@import '~antd/lib/style/themes/default.less';
+:global {
+  .ant-space-align-center {
+    align-items: initial !important;
+  }
+}
+.prefix {
+  color: red;
+}
+.btn {
+  margin-bottom: 24px;
+}
+p {
+  margin: 0;
+}
+.moreInfo {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.moreInfoContent {
+  ul,
+  li {
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    height: 30px;
+    line-height: 30px;
+  }
+  li span {
+    display: inline-block;
+    padding: 0 8px;
+    border: 1px solid #000;
+  }
+  li span:nth-child(1) {
+    border-right: none;
+  }
+  li:not(:last-child) span {
+    border-bottom: none;
+  }
+  .infoTitle {
+    width: 65%;
+  }
+  .infoValue {
+    width: 35%;
+  }
+}
+.step2PlanPlots {
+  height: 440px;
+  padding: 0 10px 20px;
+  overflow-y: scroll;
+}
+.step2_tools {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+}

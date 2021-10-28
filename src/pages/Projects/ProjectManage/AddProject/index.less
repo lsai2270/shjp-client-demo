@@ -1,0 +1,145 @@
+@import '~antd/lib/style/themes/default.less';
+.homePage {
+  :global {
+    .ant-pro-page-container-children-content {
+      margin: 0 !important;
+    }
+  }
+  .mapContainer {
+    width: 100%;
+    height: 96vh;
+  }
+  .searchContain {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 4;
+    width: 765px;
+    height: 100px;
+    margin-top: -98px;
+    margin-left: -332px;
+    padding: 35px 20px;
+    background: #f9f9f9;
+    border-radius: 20px;
+  }
+  .tabsContain {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 3;
+    width: 400px;
+    height: auto;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+
+    .title {
+      text-align: center;
+    }
+    .content {
+      position: relative;
+      height: 530px;
+    }
+    .footer {
+      display: flex;
+      justify-content: flex-end;
+      // margin: 10px;
+      height: 42px;
+      padding-top: 10px;
+      border-top: 1px solid #d9d9d9;
+    }
+    .tabMinIcon {
+      color: #1890ff;
+      font-size: 26px;
+      cursor: pointer;
+    }
+    .tabMaxIcon {
+      position: absolute;
+      bottom: -30px;
+      left: 48%;
+      color: #1890ff;
+      font-size: 26px;
+      transform: rotate(90deg);
+      cursor: pointer;
+    }
+  }
+  .toolsContainer {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    z-index: 3;
+    margin-left: -88px;
+  }
+  .radioContainer {
+    position: absolute;
+    top: 300px;
+    left: 30px;
+    z-index: 3;
+  }
+  .colorBox {
+    position: absolute;
+    bottom: 100px;
+    left: 30px;
+    z-index: 3;
+    .level1Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #df8a98;
+    }
+    .level2Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #0000ff;
+    }
+    .level3Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #008000;
+    }
+    .level4Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #ffa500;
+    }
+    .saturation1Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: rgb(38, 155, 6);
+    }
+    .saturation2Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #52c41a;
+    }
+    .saturation3Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #ad8b00;
+    }
+    .saturation4Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #fff566;
+    }
+    .saturation5Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #fa541c;
+    }
+    .saturation6Color {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      background: #cf1322;
+    }
+  }
+}

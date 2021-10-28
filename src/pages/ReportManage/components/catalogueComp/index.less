@@ -1,0 +1,42 @@
+@import '~antd/es/style/themes/default.less';
+.contain {
+  height: 528px;
+  min-height: 528px;
+  margin-bottom: 10px;
+  padding: 15px 15px 0 15px;
+  background: @component-background;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  :global {
+    .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+      background-color: #fff !important;
+    }
+  }
+}
+.siteTreeSearchValue {
+  color: #f50;
+}
+.treeIcon {
+  font-size: 15px;
+  cursor: pointer;
+}
+.rowEllipsis {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.addIcon {
+  color: rgba(0, 0, 0, 0.2);
+  font-size: 32px;
+  cursor: pointer;
+}
+.nodeBgColor {
+  padding: 0 5px;
+  background-color: #bae7ff;
+}
+.progress {
+  // position: absolute;
+  margin-left: 20px;
+  color: rgba(0, 0, 0, 0.4);
+}

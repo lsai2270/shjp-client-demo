@@ -1,0 +1,22 @@
+@import '~antd/es/style/themes/default.less';
+.container {
+  overflow: auto;
+  :global {
+    .ant-pro-page-container-children-content {
+      margin: 0;
+    }
+    .ant-pro-table-list-toolbar-container {
+      flex-direction: row-reverse !important;
+      padding-top: 0;
+    }
+    .ant-pro-table-search {
+      margin-bottom: 0;
+    }
+  }
+}
+.contentContainer {
+  height: calc(100vh - 240px);
+  padding: 20px 0;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}

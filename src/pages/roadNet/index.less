@@ -1,0 +1,53 @@
+@import '~antd/lib/style/themes/default.less';
+.homePage {
+  :global {
+    .ant-pro-page-container-children-content {
+      margin: 0 !important;
+    }
+  }
+  .mapContainer {
+    width: 100%;
+    height: 87vh;
+  }
+}
+.modelBox {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  z-index: 2;
+  width: 256px;
+  height: 200px;
+  overflow: hidden;
+  .openIcon {
+    font-size: 26px;
+    cursor: pointer;
+  }
+  .drawerHeader {
+    .closeIcon {
+      font-size: 26px;
+      cursor: pointer;
+    }
+  }
+}
+.checkbox {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+  width: 130px;
+  background: rgba(0, 0, 0, 0.5);
+  ul,
+  li {
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    height: 40px;
+    padding-left: 10px;
+    line-height: 40px;
+    border-bottom: 1px solid #d9d9d9;
+    span {
+      color: #fff;
+    }
+  }
+}

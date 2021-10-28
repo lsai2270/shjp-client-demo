@@ -1,0 +1,152 @@
+@import '~antd/es/style/themes/default.less';
+
+html,
+body,
+#root {
+  // min-width: 1680px;
+  // max-width: 1920px;
+  height: 100%;
+}
+.colorWeak {
+  filter: invert(80%);
+}
+
+.ant-layout {
+  min-height: 100vh;
+}
+
+canvas {
+  display: block;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+@media (max-width: @screen-xs) {
+  .ant-table {
+    width: 100%;
+    overflow-x: auto;
+    &-thead > tr,
+    &-tbody > tr {
+      > th,
+      > td {
+        white-space: pre;
+        > span {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+// 兼容IE11
+@media screen and(-ms-high-contrast: active), (-ms-high-contrast: none) {
+  body .ant-design-pro > .ant-layout {
+    min-height: 100vh;
+  }
+}
+
+// 菜单样式覆盖
+.ant-menu-dark.ant-menu-horizontal > .ant-menu-item:hover {
+  background-color: #001529;
+}
+.ant-menu.ant-menu-dark .ant-menu-item-selected,
+.ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
+  background-color: #001529;
+}
+//layout margin
+.ant-pro-basicLayout-content .ant-pro-page-container {
+  margin: 0 !important;
+}
+
+.imgContainer {
+  display: grid;
+  justify-content: center;
+  width: 100%;
+  .imgCompFlex {
+    display: flex;
+    flex-direction: column;
+    // text-align: center;
+    // align-self: center;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    // align-self: center;
+  }
+  ul > li {
+    display: inline-table;
+    float: left;
+    width: 40%;
+    padding: 20px 50px;
+  }
+  .imgInfo {
+    text-align: center;
+  }
+  .uplodContain {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    // align-self: flex-end;
+    // margin-bottom: 50px !important;
+    // margin-left: 20px !important;
+  }
+  .extName {
+    height: 32px;
+    padding-left: 10px;
+    color: rgba(0, 0, 0, 0.4);
+    line-height: 32px;
+  }
+}
+.tableContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.tableInfo {
+  text-align: center;
+}
+.input.ant-input.ceshiInput {
+  border-color: red;
+}
+.input.ant-input.ceshiInput:focus {
+  border-color: red;
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+}
+.input.ant-input.ceshiInput:hover {
+  border-color: red;
+}
+.header.ant-layout-header.ant-pro-fixed-header.ant-pro-top-menu {
+  z-index: 1002 !important;
+}
+// .jsx-parser {
+//   height: 98%;
+// }
+.loadingContainer {
+  .ant-progress-text {
+    color: #000 !important;
+  }
+}
+#loadingTip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  padding: 3px 10px;
+  color: #fff;
+  font-size: 14px;
+  background: red;
+}
+#jidi {
+  width: 45px;
+  height: 60px;
+  background: url('//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png');
+}

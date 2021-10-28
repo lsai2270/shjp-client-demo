@@ -1,0 +1,58 @@
+@import '~antd/es/style/themes/default.less';
+.container {
+  overflow: auto;
+  :global {
+    .ant-pro-page-container-children-content {
+      margin: 0;
+    }
+    .ant-pro-table-list-toolbar-container {
+      flex-direction: row-reverse !important;
+      padding-top: 0;
+    }
+    .ant-pro-table-search {
+      margin-bottom: 0;
+    }
+  }
+}
+.contentContainer {
+  // height: calc(100vh - 142px);
+  padding: 20px 0;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+.formulaHead {
+  display: inline-block;
+  height: 32px;
+  margin: 0;
+  padding: 0 15px;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  line-height: 30px;
+  text-align: center;
+  background: #fff;
+  border-color: #d9d9d9;
+  border-style: solid;
+  border-width: 1px 1px 1px 0;
+}
+.formulaHead:nth-child(1) {
+  border-width: 1px;
+}
+.formulaHeadBg {
+  background: rgba(0, 0, 0, 0.1);
+}
+.colGap {
+  margin-bottom: 15px;
+}
+.iconContain {
+  display: inline-block;
+  width: 80px;
+  text-align: center;
+}
+.removeIcon {
+  color: #d9d9d9;
+  font-size: 20px;
+}
+.relevance {
+  width: 200px;
+  cursor: pointer;
+}

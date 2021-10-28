@@ -1,0 +1,107 @@
+@import '~antd/es/style/themes/default.less';
+
+.stepForm {
+  max-width: 90%;
+  margin: 40px auto 0;
+}
+
+.stepFormText {
+  margin-bottom: 24px;
+  :global {
+    .ant-form-item-label,
+    .ant-form-item-control {
+      line-height: 22px;
+    }
+  }
+}
+
+.result {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px 0 8px;
+}
+
+.desc {
+  padding: 0 56px;
+  color: @text-color-secondary;
+  h3 {
+    margin: 0 0 12px 0;
+    color: @text-color-secondary;
+    font-size: 16px;
+    line-height: 32px;
+  }
+  h4 {
+    margin: 0 0 4px 0;
+    color: @text-color-secondary;
+    font-size: 14px;
+    line-height: 22px;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 12px;
+    line-height: 22px;
+  }
+}
+
+@media screen and (max-width: @screen-md) {
+  .desc {
+    padding: 0;
+  }
+}
+
+.information {
+  line-height: 22px;
+  :global {
+    .ant-row:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+  .label {
+    padding-right: 8px;
+    color: @heading-color;
+    text-align: right;
+    @media screen and (max-width: @screen-sm) {
+      text-align: left;
+    }
+  }
+}
+
+.uppercase {
+  font-size: 12px;
+}
+.step3_LineHeight {
+  height: 32px;
+  line-height: 32px;
+}
+// .step3Form {
+//   :global {
+//     .ant-form-item {
+//       margin-bottom: 0;
+//     }
+//   }
+// }
+.tableContainer {
+  width: 100%;
+  overflow: auto;
+}
+
+table.odtable {
+  width: 80%;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-spacing: 0;
+}
+table.odtable tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+table.odtable td {
+  padding: 5px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+table.odtable tr td:last-child {
+  border-right: 0;
+}
+table.odtable tr:last-child td {
+  border-bottom: 0;
+}

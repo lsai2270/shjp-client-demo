@@ -1,0 +1,122 @@
+@import '~antd/es/style/themes/default.less';
+.container {
+  overflow: auto;
+  :global {
+    .ant-pro-page-container-children-content {
+      margin: 0;
+      .ant-pro-table-list-toolbar-container {
+        flex-direction: row-reverse !important;
+        padding-top: 0;
+      }
+      .ant-pro-table-search {
+        margin-bottom: 0;
+      }
+    }
+    #contentContainer {
+      padding: 20px 10px 50px;
+      #editorContainer {
+        height: 785px;
+        .w-e-toolbar {
+          z-index: 1 !important;
+        }
+        .w-e-text-container {
+          z-index: 0 !important;
+          height: 100% !important;
+        }
+        .w-e-text-container button,
+        .w-e-text-container input {
+          padding: 4px 15px;
+        }
+        .w-e-text .imgTemplate {
+          width: 200px;
+          height: 200px;
+        }
+      }
+      .imgAlign {
+        text-align: center;
+      }
+      // p {
+      //   text-indent: 2em;
+      // }
+    }
+  }
+}
+.headGap {
+  margin-bottom: 10px;
+  padding: 15px 15px 0;
+  background: @component-background;
+}
+.rowGap {
+  margin-right: 10px;
+}
+.flexBetween {
+  display: flex;
+  justify-content: space-between;
+}
+.flexCenter {
+  display: flex;
+  justify-content: center;
+}
+.reportTitle {
+  display: inline-flex;
+}
+.comps {
+  position: absolute;
+  right: 20px;
+}
+.bodyContent {
+  margin: 0 10px !important;
+}
+.contentContain {
+  height: 888px;
+  min-height: 888px;
+  margin-bottom: 10px;
+  padding: 15px;
+  overflow: auto;
+  background: @component-background;
+  input {
+    margin: 0 8px;
+  }
+  p {
+    line-height: 30px;
+  }
+}
+.adviceContain {
+  width: 100%;
+}
+.tools_code {
+  position: absolute;
+  top: 40px;
+  right: 80px;
+  z-index: 3 !important;
+}
+@media screen and (min-width: 1440px) and(max-width: 1680px) {
+  .tools_code {
+    position: absolute;
+    top: 80px;
+    left: 80px;
+    z-index: 3 !important;
+  }
+}
+@media screen and(max-width: 1440px) {
+  .tools_code {
+    position: absolute;
+    top: 80px;
+    left: 240px;
+    z-index: 3 !important;
+  }
+}
+// .editor {
+//   width: 60%;
+//   min-height: 1000px;
+//   margin: 0 auto;
+//   :global {
+//     .w-e-toolbar,
+//     .w-e-text-container {
+//       z-index: 0 !important;
+//     }
+//     .w-e-text-container {
+//       height: 800px !important;
+//     }
+//   }
+// }
