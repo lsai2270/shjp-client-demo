@@ -620,7 +620,7 @@ export default (): React.ReactNode => {
         },
       },
       selectStyle: {
-        color: '#ff0000',
+        color: '#ff0000', 
         cursor: 'pointer',
       },
     });
