@@ -31,13 +31,13 @@ const IconFont = createFromIconfontCN({
 // import projectData from './data';
 import $ from 'jquery';
 import lodash from 'lodash';
-import { getTreeData } from '@/tools';
+import { getTreeData, getServiceLevel } from '@/tools';
 import { getDictData } from '@/services/projectManage';
 
 import { Step1Comp, Step2Comp, Step3Comp, Step4Comp, Step5Comp } from './StepComp';
 import { getMapSurround, getRoads } from '@/services/v2/baseCitybit';
 import { getProjectById } from '@/services/v2/project';
-import { getAllRoads } from '@/services/v2/map';
+import { getAllRoads, getLinkSaturation } from '@/services/v2/map';
 import styles from './index.less';
 
 declare let AMapUI: any;
@@ -111,7 +111,110 @@ export default (): React.ReactNode => {
   const roadLevelRef: any = useRef(true);
   const saturationRef: any = useRef(false);
   const currenLineRef: any = useRef(null);
-
+  const linksIds = [
+    'epmdUtI3hSZ6LfEnc5_mZ',
+    'OinMjWVf_s_scbZmkTZzF',
+    'y0T0jq8X_6OopRnplE_gy',
+    'ZhXUTrDdluwxvpv4gk1Pz',
+    '71GuQouj8NpIGVwpqJa43',
+    '9XEDyiLiIhNlKxOf3bm1L',
+    'a5anNOUza-EWKhpS-OZa4',
+    'AoFZe2tezW4GL-ER8YQxw',
+    'AXDLji3wAigFZDCJ2uFTs',
+    'B4hHm8N11LezAcjx8oyOh',
+    'b5UYOA4v3M7cVXgJNd--O',
+    'cV_sfNcdEyg5M9uoCfPGP',
+    'E2uQVazYNqVageHmaz6CH',
+    'EHr_06t8yHUQWcCgGfz1v',
+    'EzwN6v8Gzhcqt2lL612xL',
+    'HsT9uQZRHEyUAlGhGHlrt',
+    'jHSGdXoEI7XlIwAO0IjYS',
+    'jTmzczOX3mgCjnwvTzQk5',
+    'kwMKRt5Nld2eBoHhpN76a',
+    'OFHHVZljwmcFVwgeqSoWH',
+    'PO0ySMxVk0hov6LkvnRs1',
+    'QD086HT3VqfIEqPne91SZ',
+    'UUtMz-mwrxwlzMOOiS5fu',
+    'V7h351Uzl9iB2mFTU5Iz-',
+    'WDVk9coaXkro23uchlo16',
+    'wJ3sa4XoRhvRcW7R4hS1p',
+    'WQLxyOma9fyC4vC5gpcDo',
+    'XAySX2VmrfKwL4p8PKMsO',
+    'Y5Pf6FSmgDp6zsOxpsisV',
+    'Ynb4hOBS0xyb_CIe4Zwgr',
+    'yNWg9eCfLEaLSntL8rtpm',
+    'bpEdbppz7twueIZAEa1RX',
+    'dXMD7ojNqZylijLiUhShY',
+    'eFxEXRtRJWdFjKF8bjkty',
+    'hi8-Vk9qk2jBn5LymWo_Y',
+    'hmQF0PeMq1IBy2tlWenso',
+    'HODcUQBc_Y8b2WCg7RKql',
+    'HtM7-J818XAkgyvPIAh9O',
+    'ii0neUzqPTyxEoXft36YV',
+    'PZQTr-8ig_rLybqR6CJuT',
+    'Vm7FHQakREaUMTwjtdWUP',
+    'vniUrXlgzFME2XSNpWuVa',
+    'zs1kbA8SuCqt6un1SHpSH',
+    '_tUJ5oUAVLHdc_bEF38FR',
+    '5vz21pSO3F729SYt2qbA9',
+    'CQWI-OtNenzbgZUCC2iKL',
+    'Fd-ZW1m5f3p2jkQRM3Bk9',
+    'NefXPe3BXWq-ocGdpag3a',
+    'rQxkDSLiY5y6g036oQLPb',
+    'SGed1ez06OqjeGh1RtgAM',
+    'UdDGyDc3YhzPhT8pCnNj5',
+    'W77bCBn8xoJg_Wi11rg3_',
+    'y7ajGuvQ_7dx-qmgvuDIT',
+    '6WODOH5TsvKdr0FNbiZrQ',
+    '8nYmBkJ3eM3ykEe8Eoyca',
+    '9oa-xzjtCScwMaXQefU9V',
+    'aRTj0GHMNJwdcmif4yTqp',
+    'ctJWrfm2N43fivTD5kn_V',
+    'dnYMRf9SKrH4ZqK6k2pGH',
+    'FggEuGf0pIpdbDKOC-taM',
+    'h-5mIEWdJ22_O1q_vT0bq',
+    'h-qLOH2l9CFY2HKNs0bhY',
+    'j5Kyz5YKIi0qKVXcQJi6f',
+    'm1YZOpoPTxFKnhCPeybFh',
+    'N-J-RBRp3D_HEYJujvNWX',
+    'ohIpePQSV6X5JorqAxzvE',
+    'oImKIEWRxfMfB4sD-KVI1',
+    'Phx4yXUv--FyA_crEH55D',
+    'Q4oIArgwwu0BwpmcstjGo',
+    'RzT3JPkKT4gp_ceDBocPL',
+    'SEDJXYeIee5Ub28_6mltm',
+    'sMGFX9lop75vEpWtNbxUb',
+    'spB9kd6daQlY9_hFJ-c3v',
+    'VGcV7DuR33ztPSZSOEFxr',
+    'voOAiV1kbgH195QjPUpQW',
+    'W6yNiJ5ivfP8UyALzr9h4',
+    'wbspc5LcJhCNRrjcqtfue',
+    'zKuaBt3r9jBZvNnXZmZXI',
+    'A8qyWA9_33_hrj3tgf04y',
+    'VM5_3vP8R4Ql6TiY1MPqa',
+    'Mzt4XN6VakM-gbOSJa7FJ',
+    'ZDwoiPjofWotJ97oFj09P',
+    'D5mB8E1OEa8h3bLcyGNZW',
+    'C2fO7ZhiC7gONif9-YBBW',
+    'Qqd_pQ_b7GfsgMEspVn4_',
+    'Rpa92vHswC-cLWa7vT0-k',
+    'I4v8_JombIcYKq3gM9KyO',
+    'pIge4hG-PaRGEVonP9YkH',
+    'FtJzUYZtfAI1CG3vkDlrs',
+    'fzUhS7PsfTqL6YgQVxrNP',
+    'CT3Jnk36lrF0dWXmmuHRC',
+    'BCeF_BJTbNTkqKmhSL182',
+    'SnrfyDiy_MElZBnYNUMI-',
+    'CW99F6wFYL-PE24BtXDuj',
+    'NQuKA-yGMqrO_J5_8jDp6',
+    'xGCTr_y5AGxtX90SGr36e',
+    'o4CBDn-JA86yxZVvCoF1q',
+    '6x78epGGoNCrIzthU8Lnc',
+    '6ZLt7EfNqa5__y-l3NNPY',
+    'V9ShXd7baMiLfp0vqLgkU',
+    'Cxuuht_ePEW5pId944vvb',
+    '',
+  ];
   useEffect(() => {
     if (stepNum == 1 && tabsVisible) {
       let plotInfo: any = localStorage.getItem('plotInfo');
@@ -253,14 +356,35 @@ export default (): React.ReactNode => {
       linksData.push(...newLinksData);
       newRoadInfo[`${item._id}`] = item;
     });
-    linksData = linksData.map((item: any, index: number) => {
-      return {
-        ...item,
-        saturation: saturationArr[index % 6],
-      };
-    });
     // console.log('nodesData-------->', nodesData);
     nodesData = lodash.uniqBy(nodesData, 'nodeId');
+    getLinkSaturation({
+      linkIds: linksIds,
+      startTime: '2021-4-12 00:00:00',
+      endTime: '2021-4-12 00:20:00',
+    }).then((res) => {
+      console.log('res', res);
+      linksData = linksData.map((item: any) => {
+        const libkObj = lodash.find(res.data.data, (o) => o.linkId == item.linkId);
+        if (libkObj) {
+          return {
+            ...item,
+            saturation: libkObj.linkSaturations[0].saturation,
+          };
+        }
+        return {
+          ...item,
+          saturation: 0,
+        };
+      });
+      let layers = map.getLayers();
+      let lineLayer = layers.filter((item: any) => item.get('name') == 'lineLayer')[0];
+      lineLayer.setData(linksData, {
+        // type: 'json',
+        lnglat: 'lnglat',
+      });
+      lineLayer.render();
+    });
     // console.log('nodesData===>', nodesData);
     handleOnClearMapLayers();
     handleOnLineLayerAdd(linksData);
@@ -577,42 +701,40 @@ export default (): React.ReactNode => {
       style: {
         borderWidth: 6,
         color: (res: any) => {
-          console.log(res);
-
           if (res.value.checked) {
             return 'green';
           }
           if (roadLevelRef.current) {
-            if (res.value.roadClass == "43000") {
+            if (res.value.roadClass == '43000') {
               return '#df8a98';
             }
-            if (res.value.roadClass == "44000") {
+            if (res.value.roadClass == '44000') {
               return '#0000ff';
             }
-            if (res.value.roadClass == "45000") {
+            if (res.value.roadClass == '45000') {
               return '#008000';
             }
-            if (res.value.roadClass == "47000") {
+            if (res.value.roadClass == '47000') {
               return '#ffa500';
             }
           }
           if (saturationRef.current) {
-            if (res.value.saturation == 'A') {
-              return '#092b00';
-            }
-            if (res.value.saturation == 'B') {
+            if (getServiceLevel(res.value.saturation) == 'A') {
               return '#52c41a';
             }
-            if (res.value.saturation == 'C') {
+            if (getServiceLevel(res.value.saturation) == 'B') {
+              return '#092b00';
+            }
+            if (getServiceLevel(res.value.saturation) == 'C') {
               return '#ad8b00';
             }
-            if (res.value.saturation == 'D') {
+            if (getServiceLevel(res.value.saturation) == 'D') {
               return '#fff566';
             }
-            if (res.value.saturation == 'E') {
+            if (getServiceLevel(res.value.saturation) == 'E') {
               return '#fa541c';
             }
-            if (res.value.saturation == 'F') {
+            if (getServiceLevel(res.value.saturation) == 'F') {
               return '#cf1322';
             }
           }
@@ -620,7 +742,7 @@ export default (): React.ReactNode => {
         },
       },
       selectStyle: {
-        color: '#ff0000', 
+        color: '#ff0000',
         cursor: 'pointer',
       },
     });
@@ -634,7 +756,7 @@ export default (): React.ReactNode => {
       // console.log('LngLat: ', event.lnglat) // 元素所在经纬度
       // const objPixel = new AMap.Pixel(event.originalEvent.x, event.originalEvent.y - 48);
       // const newLngLat = map.containerToLngLat(objPixel);
-      const { name, roadClass, flow, saturation } = event.rawData;
+      const { name, roadClass, flow, saturation, linkId } = event.rawData;
       currenLineRef.current = event.rawData;
       setIsModalVisible(true);
       form.setFieldsValue({
@@ -1067,7 +1189,7 @@ export default (): React.ReactNode => {
       }
       pointsData.push(pointObj);
     }
-    console.log('pointsData==>', pointsData);
+    // console.log('pointsData==>', pointsData);
     newPointsLayer.setData(pointsData, {
       type: 'json',
       lnglat: 'center',
@@ -1620,7 +1742,27 @@ export default (): React.ReactNode => {
     lineLayer.render();
     setRadioValue(e.target.value);
   };
-  const handleOk = () => {
+  const handleOk = async () => {
+    const formData = await form.validateFields();
+    const { linkId } = currenLineRef.current;
+    let layers = map.getLayers();
+    let lineLayer = layers.filter((item: any) => item.get('name') == 'lineLayer')[0];
+    let linksData = lineLayer._dataSet.getData();
+    linksData = linksData.map((item: any) => {
+      if (item.linkId == linkId) {
+        return {
+          ...item,
+          ...formData,
+        };
+      }
+      return item;
+    });
+    lineLayer.setData(linksData, {
+      // type: 'json',
+      lnglat: 'lnglat',
+    });
+    lineLayer.render();
+    message.success('保存成功!');
     setIsModalVisible(false);
   };
 
@@ -1628,6 +1770,11 @@ export default (): React.ReactNode => {
     setIsModalVisible(false);
     currenLineRef.current = null;
     form.resetFields();
+  };
+  const handleOnGetLinksSaturation = (data: any) => {
+    getLinkSaturation(data).then((res) => {
+      console.log('res', res);
+    });
   };
   return (
     <PageContainer pageHeaderRender={false} className={styles.homePage}>
@@ -1690,7 +1837,7 @@ export default (): React.ReactNode => {
               <Option value="47000">支路</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="道路流量" name="flow" rules={[{ required: true, message: '请输入!' }]}>
+          <Form.Item label="道路流量" name="flow" rules={[{ required: false, message: '请输入!' }]}>
             <Input placeholder="道路流量" />
           </Form.Item>
           <Form.Item
@@ -1705,7 +1852,7 @@ export default (): React.ReactNode => {
       <div className={styles.radioContainer}>
         <Radio.Group onChange={handleOnSetRadioValue} value={radioValue} buttonStyle="solid">
           <Space direction="vertical">
-            <Radio.Button  value={1}>道路等级</Radio.Button>
+            <Radio.Button value={1}>道路等级</Radio.Button>
             <Radio.Button value={2}>道路饱和度</Radio.Button>
           </Space>
         </Radio.Group>

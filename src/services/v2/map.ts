@@ -13,3 +13,6 @@ export async function getRoads(data: any): Promise<any> {
 export async function getAllRoads(data?: any): Promise<any> {
   return axios.get(`http://dev-traffic-base.citybit.cn/api/v2/road/all`, { params: data });
 }
+export async function getLinkSaturation(data?: any): Promise<any> {
+  return axios.post(`http://dev-traffic-base.citybit.cn/api/v2/amap/link/saturation`, data);
+}
