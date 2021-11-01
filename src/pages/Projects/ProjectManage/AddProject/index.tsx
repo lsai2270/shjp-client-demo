@@ -359,11 +359,12 @@ export default (): React.ReactNode => {
     // console.log('nodesData-------->', nodesData);
     nodesData = lodash.uniqBy(nodesData, 'nodeId');
     getLinkSaturation({
-      linkIds: linksIds,
+      // linkIds: linksIds,
       startTime: '2021-4-12 00:00:00',
       endTime: '2021-4-12 00:20:00',
+      adcode: 310114,
     }).then((res) => {
-      console.log('res', res);
+      // console.log('res', res);
       linksData = linksData.map((item: any) => {
         const libkObj = lodash.find(res.data.data, (o) => o.linkId == item.linkId);
         if (libkObj) {
@@ -377,19 +378,12 @@ export default (): React.ReactNode => {
           saturation: 0,
         };
       });
-      let layers = map.getLayers();
-      let lineLayer = layers.filter((item: any) => item.get('name') == 'lineLayer')[0];
-      lineLayer.setData(linksData, {
-        // type: 'json',
-        lnglat: 'lnglat',
-      });
-      lineLayer.render();
+      handleOnClearMapLayers();
+      handleOnLineLayerAdd(linksData);
+      handleOnPointsLayerAdd(nodesData, 'initpoint');
+      setAllLinksData(linksData);
     });
     // console.log('nodesData===>', nodesData);
-    handleOnClearMapLayers();
-    handleOnLineLayerAdd(linksData);
-    handleOnPointsLayerAdd(nodesData, 'initpoint');
-    setAllLinksData(linksData);
     // window.roadInfoObj = newRoadInfo;
     // console.log('window.roadInfoObj===>', window.roadInfoObj);
     // setProjectData(res.data);
