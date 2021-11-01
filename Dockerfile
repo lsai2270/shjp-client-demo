@@ -7,11 +7,11 @@ RUN apk add --no-cache tzdata \
     && echo "Asia/Shanghai" > /etc/timezone \
     &&rm -rf /var/cache/apk/* /tmp/* /var/tmp/* $HOME/.cache
 
-ENV SHJPSERVER=http://dev-api-shjp.citybit.cn
-ENV DXFURL=http://dev-visum-net-viewer.citybit.cn/net/viewer/?netId=
+# ENV SHJPSERVER=http://dev-api-shjp.citybit.cn
+# ENV DXFURL=http://dev-visum-net-viewer.citybit.cn/net/viewer/?netId=
 ENV REACT_APP_ENV=prod
 
-WORKDIR /usr/src/app/
+WORKDIR /web/client/
 COPY package.json .
 
 COPY . .
@@ -26,7 +26,7 @@ WORKDIR /usr/share/nginx/html/
 
 COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=builder /usr/src/app/dist  /usr/share/nginx/html/
+COPY --from=builder /web/client/dist  /usr/share/nginx/html/
 
 EXPOSE 80
 
