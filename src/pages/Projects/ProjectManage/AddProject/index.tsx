@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import * as echarts from 'echarts';
 import { PageContainer } from '@ant-design/pro-layout';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import {
@@ -30,6 +31,7 @@ const IconFont = createFromIconfontCN({
 });
 // import projectData from './data';
 import $ from 'jquery';
+import axios from 'axios';
 import lodash from 'lodash';
 import { getTreeData, getServiceLevel } from '@/tools';
 import { getDictData } from '@/services/projectManage';
@@ -104,8 +106,11 @@ export default (): React.ReactNode => {
   tabStepRef.current = stepNum;
   // const [baseData,setBaseData] = useState<any>(undefined);        //基地数据
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [radioValue, setRadioValue] = useState<any>(1); // 道路等级
+  const [radioValue1, setRadioValue1] = useState("1");
   const [allLinksData, setAllLinksData] = useState<any>([]); // 道路等级
+  const [currentAreaData, setCurrentAreaData] = useState<any>(null); // 道路等级
   // const [roadLevelVisible, setRoadLevelVisible] = useState<boolean>(true); // 道路等级
   // const [saturationVisible, setSaturationVisible] = useState<boolean>(false); // 道路等级
   const roadLevelRef: any = useRef(true);
@@ -235,17 +240,18 @@ export default (): React.ReactNode => {
   }, []);
   useEffect(() => {
     if (map && AMap) {
-      handleOnSearch();
+      // handleOnSearch();
       // handleOnDistrictCluster();
-      handleOnDrawRoadLineLayer(); // 道路图层
+      // handleOnDrawRoadLineLayer(); // 道路图层
       handleOnDrawLineLayer(); // 路段图层
       handleOnDrawPointLayer(); // 节点图层
-      handleOnDrawPlotLayer(); // 地块图层
-      handleOnDrawConnectorLayer(); //connector图层
+      // handleOnDrawPlotLayer(); // 地块图层
+      // handleOnDrawConnectorLayer(); //connector图层
       handleOnDrawLabelLayer(); // 文字图层
-      handleOnMouseTool(); // 绘制工具
-      handleOnMapEvent(); // 地图事件
+      // handleOnMouseTool(); // 绘制工具
+      // handleOnMapEvent(); // 地图事件
       hanldeOnGetSurround();
+      handleOnReadFile()
     }
   }, [map, AMap]);
   useEffect(() => {
@@ -266,6 +272,264 @@ export default (): React.ReactNode => {
       ]);
     }
   }, [currentLinkData]);
+  const handleOnReadFile = () =>{
+    axios('/a.txt').then(res=>{
+      let areaData: any = res.data.split("\r\n");
+      areaData = areaData.map((item:any)=>{
+        let newData = item.split("\t");
+
+        return {
+          location: newData[0].split(','),
+          nnProduction: newData[1],
+          nnAttraction: newData[2],
+          nwProduction: newData[3],
+          nwAttraction: newData[4],
+          wnProduction: newData[5],
+          wnAttraction: newData[6],
+          production: newData[7],
+          attraction: newData[8],
+        }
+      })
+      // console.log('====================================');
+      // console.log("areaData",areaData);
+      // console.log('====================================');
+      // handleOnDrawAreaLayer(areaData)
+      handleOnDistrictCluster(areaData);
+    })
+  }
+  const handleOnInitCharts = (data: any) =>{
+    const adom: any = document.querySelector('#paBar');
+    var myChart = echarts.init(adom);
+    // 绘制图表
+    myChart.setOption({   
+      xAxis: {
+        type: 'category',
+        data: ["交通产生量",'交通吸引量']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          data: [
+            {
+              value: data[0],
+              itemStyle: {
+                color: '#13c2c2'
+              }
+            },
+            {
+              value: data[1],
+              itemStyle: {
+                color: '#73d13d'
+              }
+            }
+          ],
+          type: 'bar'
+        }
+      ]
+    });
+  }
+   // 区域下项目点击事件
+   const handleOnPointsClick = (ev: any, point: any) => {
+    // console.log('ev', ev);
+    // console.log("point",point);
+    const { dataItem } = point.data;
+    setCurrentAreaData(dataItem);
+    setIsModalVisible1(true);
+    setTimeout(() => {
+      handleOnInitCharts([dataItem.production,dataItem.attraction]);
+    }, 100);
+    
+    // const position = ev.originalEvent.pos;
+    // const { data } = ev.clusterData[0];
+    // const infoWindow = new AMapUI.SimpleInfoWindow({
+    //   position: dataItem.location,
+    //   offset: new AMap.Pixel(0, -20),
+    //   infoTitle: "小区",
+    //   infoBody: `<p class="my-desc">${dataItem.name}${dataItem.range}</p>`,
+    // });
+    // infoWindow.open(map);
+  };
+  //区划划分聚合
+  const handleOnDistrictCluster = (projects: any) => {
+    function initPage(DistrictCluster: any, PointSimplifier: any, $: any) {
+      var pointSimplifierIns = new PointSimplifier({
+        map: map, //所属的地图实例
+        zIndex: 150,
+        autoSetFitView: false, //禁止自动更新地图视野
+        getPosition: function (item: any) {
+          return item.position;
+        },
+        getHoverTitle: function (dataItem: any, idx: any) {
+          return '';
+          return idx + ': ' + dataItem.dataItem;
+        },
+        renderOptions: {
+          //点的样式
+          pointStyle: {
+            content: PointSimplifier.Render.Canvas.getImageContent(
+              '//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png',
+            ),
+            width: 20,
+            height: 32,
+            cursor: "pointer",
+            // fillStyle: 'rgba(153, 0, 153, 0.38)'
+          },
+          //鼠标hover时的title信息
+          hoverTitleStyle: {
+            position: 'top',
+          },
+          pointHoverStyle: {
+            strokeStyle: 'rgba(0,0,0,0)',
+          },
+        },
+      });
+      pointSimplifierIns.on('pointClick', handleOnPointsClick);
+      let newDistCluster = new DistrictCluster({
+        zIndex: 50,
+        map: map, //所属的地图实例
+        // topAdcodes: ['310000'],
+        topAdcodes: [
+          '310101',
+          '310109',
+          '310110',
+          '310113',
+          '310114',
+          '310118',
+          '310117',
+          '310116',
+          '310112',
+          '310120',
+          '310115',
+          '310104',
+          '310105',
+          '310107',
+          '310106',
+          '310151',
+        ],
+        getPosition: function (item: any) {
+          if (!item) {
+            return null;
+          }
+          return item.location;
+          var parts = item.split(',');
+          //返回经纬度
+          return [parseFloat(parts[0]), parseFloat(parts[1])];
+        },
+        renderOptions: {
+          //基础样式
+          featureStyle: {
+            fillStyle: 'rgba(102,170,0,0.01)', //填充色
+            lineWidth: 2, //描边线宽
+            strokeStyle: 'rgb(31, 119, 180)', //描边色
+            //鼠标Hover后的样式
+            hoverOptions: {
+              fillStyle: 'rgba(255,255,255,0)',
+            },
+          },
+          //特定区划级别的默认样式
+          featureStyleByLevel: {
+            //全国
+            country: {
+              fillStyle: 'rgba(49, 163, 84, 0.5)',
+            },
+            //省
+            province: {
+              fillStyle: 'rgba(116, 196, 118, 0.3)',
+            },
+            //市
+            city: {
+              fillStyle: 'rgba(161, 217, 155, 0.1)',
+            },
+            //区县
+            district: {
+              fillStyle: 'rgba(199, 233, 192, 0)',
+            },
+          },
+        },
+      });
+      setDistCluster(newDistCluster);
+      var currentAdcode: any = null;
+      newDistCluster.on('clusterMarkerClick', function (e: any, feature: any) {
+        // console.log("e==>",e);
+        // console.log("feature==>",feature);
+        currentAdcode = feature.adcode;
+        // console.log('currentAdcode',currentAdcode);
+        // //获取该节点的聚合信息
+        newDistCluster.getClusterRecord(currentAdcode, function (error: any, result: any) {
+          // console.log("result",result);
+          //currentAdcode已经更新，有新的点击
+          if (result.adcode !== currentAdcode) {
+            return;
+          }
+          //设置数据
+          pointSimplifierIns.setData(result.dataItems);
+        });
+      });
+      //监听区划面的点击
+      // distCluster.on('featureClick', function(e:any, feature:any) {
+      //   currentAdcode = feature.properties.adcode;
+      //   console.log('currentAdcode',currentAdcode);
+      //   //获取该节点的聚合信息
+      //   distCluster.getClusterRecord(currentAdcode, function(error:any, result:any) {
+      //     //currentAdcode已经更新，有新的点击
+      //     if (result.adcode !== currentAdcode) {
+      //         return;
+      //     }
+      //     //设置数据
+      //     pointSimplifierIns.setData(result.dataItems);
+      //   })
+      // });
+      newDistCluster.on('renderFinish', function (e: any, result: any) {
+        var features = result.features, //当前绘制的features
+          currentAdcodeExists = false;
+        for (var i = 0, len = features.length; i < len; i++) {
+          if (currentAdcode === features[i].properties.adcode) {
+            currentAdcodeExists = true;
+            break;
+          }
+        }
+        if (!currentAdcodeExists) {
+          //如果当前adcode没有绘制，清除？
+          pointSimplifierIns.setData(null);
+        }
+      });
+      window.distCluster = newDistCluster;
+      function refresh() {
+        var zoom = map.getZoom();
+        //获取 pointStyle
+        var pointStyle = pointSimplifierIns.getRenderOptions().pointStyle;
+        //根据当前zoom调整点的尺寸
+        pointStyle.width = pointStyle.height = 2 * Math.pow(1.2, map.getZoom() - 3);
+        // var zoom = map.getZoom();
+        // if (zoom < 10) {
+        //   pointSimplifierIns.hide();
+        // } else {
+        //   pointSimplifierIns.show();
+        // }
+      }
+      // map.on('zoomend', function() {
+      //   refresh();
+      // });
+      // refresh();
+      newDistCluster.setData(projects);
+      // $('<div id="loadingTip">加载数据，请稍候...</div>').appendTo(document.body);
+      // $.get('https://a.amap.com/amap-ui/static/data/10w.txt', function(csv:any) {
+      //     $('#loadingTip').remove();
+      //     var data = csv.split('\n');
+      //     distCluster.setData(data);
+      // });
+    }
+    //加载相关组件
+    AMapUI.load(
+      ['ui/geo/DistrictCluster', 'ui/misc/PointSimplifier', 'lib/$'],
+      function (DistrictCluster: any, PointSimplifier: any, $: any) {
+        //启动页面
+        initPage(DistrictCluster, PointSimplifier, $);
+      },
+    );
+  };
   // 获取合围范围
   // const hanldeOnGetSurround = async (params?: any) => {
   //   const res = await getMapSurround({
@@ -420,7 +684,7 @@ export default (): React.ReactNode => {
         // zoomEnable: false,
         // dragEnable: false,
         // scrollWheel: false,
-        zIndex: 10,
+        zIndex: 15,
         mapStyle: 'amap://styles/whitesmoke', //设置地图的显示样式
       });
       newMap.addControl(new newAMap.ToolBar());
@@ -548,6 +812,25 @@ export default (): React.ReactNode => {
     });
     event.target.render();
   };
+  // 小区图层
+  const handleOnDrawAreaLayer = (data:any) =>{
+    var vl = new Loca.IconLayer({
+      map: map,
+      name: 'areaLayer',
+      eventSupport: true,
+      zIndex: 502,
+    });
+    vl.setData(data, {
+      lnglat: 'location'
+    });
+    vl.setOptions({
+      source: "/img/1.png",
+      style: {
+        size: 32
+      }
+    });
+    vl.render();
+  }
   // 节点图层
   const handleOnDrawPointLayer = () => {
     let data: any[] = [];
@@ -555,7 +838,7 @@ export default (): React.ReactNode => {
     const pointLayer = new Loca.PointLayer({
       map: map,
       name: 'pointLayer',
-      zIndex: 504,
+      zIndex: 154,
       eventSupport: true,
     });
     // console.log("newPointsLayer===>",newPointsLayer);
@@ -683,7 +966,7 @@ export default (): React.ReactNode => {
     const lineLayer = new Loca.LineLayer({
       map: map,
       name: 'lineLayer',
-      zIndex: 503,
+      zIndex: 153,
       eventSupport: true,
     });
     // console.log("lineLayer===>",lineLayer);
@@ -844,7 +1127,7 @@ export default (): React.ReactNode => {
       data: data,
       name: 'labelLayer',
       eventSupport: false,
-      zIndex: 504,
+      zIndex: 155,
     });
     labelLayer.setData(data, {
       type: 'json',
@@ -1076,7 +1359,7 @@ export default (): React.ReactNode => {
       data: newdata,
       eventSupport: false,
       name: 'labelLayer',
-      zIndex: 504,
+      zIndex: 155,
     });
     labelLayer.set('data', newdata);
     labelLayer.setData(newdata, {
@@ -1765,11 +2048,27 @@ export default (): React.ReactNode => {
     currenLineRef.current = null;
     form.resetFields();
   };
+  const handleCancel1 = () => {
+    setIsModalVisible1(false);
+    setRadioValue1("1");
+  };
   const handleOnGetLinksSaturation = (data: any) => {
     getLinkSaturation(data).then((res) => {
       console.log('res', res);
     });
   };
+  const hanldeOnSetRadio = (e:any) =>{
+    if(e.target.value==1){
+      handleOnInitCharts([currentAreaData.production,currentAreaData.attraction]);
+    }else if(e.target.value==2){
+      handleOnInitCharts([currentAreaData.nnProduction,currentAreaData.nnAttraction]);
+    }else if(e.target.value==3){
+      handleOnInitCharts([currentAreaData.nwProduction,currentAreaData.nwAttraction]);
+    }else if(e.target.value==4){
+      handleOnInitCharts([currentAreaData.wnProduction,currentAreaData.wnAttraction]);
+    }
+    setRadioValue1(e.target.value)
+  }
   return (
     <PageContainer pageHeaderRender={false} className={styles.homePage}>
       {!tabsVisible && false && (
@@ -1808,6 +2107,17 @@ export default (): React.ReactNode => {
           </Space>
         </div>
       )}
+      <Modal title="小区交通量" visible={isModalVisible1} footer={null} onCancel={handleCancel1}>
+        <div style={{textAlign:'center'}}>
+          <Radio.Group value={radioValue1} buttonStyle="solid" onChange={hanldeOnSetRadio} >
+            <Radio.Button value="1">交通总量</Radio.Button>
+            <Radio.Button value="2">内内交通量</Radio.Button>
+            <Radio.Button value="3">内外交通量</Radio.Button>
+            <Radio.Button value="4">外内交通量</Radio.Button>
+          </Radio.Group>
+        </div>
+        <div id="paBar" style={{width:"500px",height:'300px'}}></div>
+      </Modal>
       <Modal title="道路信息" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
         <Form
           form={form}
