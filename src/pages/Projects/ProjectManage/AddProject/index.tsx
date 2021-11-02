@@ -50,6 +50,10 @@ export default (): React.ReactNode => {
   // let map: any;
   // let distCluster:any; //区域划分聚合
   // let mouseTool: any;
+  const minLat = 31.227517;
+  const maxLat = 31.249226;
+  const minLng = 121.460217;
+  const maxLng = 121.492451;
   const saturationArr = ['A', 'B', 'C', 'D', 'E', 'F'];
   const [form] = Form.useForm();
   let crossFlag: boolean = false;
@@ -107,6 +111,7 @@ export default (): React.ReactNode => {
   // const [baseData,setBaseData] = useState<any>(undefined);        //基地数据
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible1, setIsModalVisible1] = useState(false);
+  const [loadingDataVisible, setLoadingDataVisible] = useState(false);
   const [radioValue, setRadioValue] = useState<any>(1); // 道路等级
   const [radioValue1, setRadioValue1] = useState('1');
   const [allLinksData, setAllLinksData] = useState<any>([]); // 道路等级
@@ -251,7 +256,7 @@ export default (): React.ReactNode => {
       // handleOnMouseTool(); // 绘制工具
       // handleOnMapEvent(); // 地图事件
       hanldeOnGetSurround();
-      handleOnReadFile();
+      // handleOnReadFile();
     }
   }, [map, AMap]);
   useEffect(() => {
@@ -276,26 +281,33 @@ export default (): React.ReactNode => {
     axios('/a.txt').then((res) => {
       console.log('res', res);
       let areaData: any = res.data.split('\n');
-      areaData = areaData.map((item: any) => {
-        let newData = item.split('\t');
-
-        return {
-          location: newData[0].split(','),
-          nnProduction: newData[1],
-          nnAttraction: newData[2],
-          nwProduction: newData[3],
-          nwAttraction: newData[4],
-          wnProduction: newData[5],
-          wnAttraction: newData[6],
-          production: newData[7],
-          attraction: newData[8],
-        };
-      });
-      console.log('====================================');
-      console.log('areaData', areaData);
-      console.log('====================================');
-      // handleOnDrawAreaLayer(areaData)
-      handleOnDistrictCluster(areaData);
+      areaData = areaData
+        .map((item: any) => {
+          let newData = item.split('\t');
+          return {
+            location: newData[0].split(','),
+            nnProduction: newData[1],
+            nnAttraction: newData[2],
+            nwProduction: newData[3],
+            nwAttraction: newData[4],
+            wnProduction: newData[5],
+            wnAttraction: newData[6],
+            production: newData[7],
+            attraction: newData[8],
+          };
+        })
+        .filter(
+          (item: any) =>
+            minLng < item.location[0] &&
+            item.location[0] < maxLng &&
+            minLat < item.location[1] &&
+            item.location[1] < maxLat,
+        );
+      // console.log('====================================');
+      // console.log('areaData', areaData);
+      // console.log('====================================');
+      handleOnDrawAreaLayer(areaData);
+      // handleOnDistrictCluster(areaData);
     });
   };
   const handleOnInitCharts = (data: any) => {
@@ -624,6 +636,22 @@ export default (): React.ReactNode => {
     });
     // console.log('nodesData-------->', nodesData);
     nodesData = lodash.uniqBy(nodesData, 'nodeId');
+    console.log(
+      'minLat',
+      lodash.minBy(nodesData, (o) => o.center.lat),
+    );
+    console.log(
+      'maxLat',
+      lodash.maxBy(nodesData, (o) => o.center.lat),
+    );
+    console.log(
+      'minLng',
+      lodash.minBy(nodesData, (o) => o.center.lng),
+    );
+    console.log(
+      'maxLng',
+      lodash.maxBy(nodesData, (o) => o.center.lng),
+    );
     getLinkSaturation({
       // linkIds: linksIds,
       startTime: '2021-4-12 00:00:00',
@@ -820,7 +848,7 @@ export default (): React.ReactNode => {
       map: map,
       name: 'areaLayer',
       eventSupport: true,
-      zIndex: 502,
+      zIndex: 152,
     });
     vl.setData(data, {
       lnglat: 'location',
@@ -832,6 +860,17 @@ export default (): React.ReactNode => {
       },
     });
     vl.render();
+    vl.on('click', function (event: any) {
+      // console.log('Click target: ', event.target) // 触发click事件的元素
+      // console.log('Event type: ', event.type) // 事件名称
+      // console.log('Raw Event: ', event.originalEvent) // 原始DomEvent事件
+      // console.log('point Raw data: ', event.rawData); // 触发元素对应的原始数据
+      setCurrentAreaData(event.rawData);
+      setIsModalVisible1(true);
+      setTimeout(() => {
+        handleOnInitCharts([event.rawData.production, event.rawData.attraction]);
+      }, 100);
+    });
   };
   // 节点图层
   const handleOnDrawPointLayer = () => {
@@ -2071,6 +2110,23 @@ export default (): React.ReactNode => {
     }
     setRadioValue1(e.target.value);
   };
+  const handleOnLoadData = () => {
+    let layers = map.getLayers();
+    let newAreaLayer = layers.filter((item: any) => item.get('name') == 'areaLayer')[0];
+    if (loadingDataVisible) {
+      if (newAreaLayer) {
+        newAreaLayer.setMap(null);
+      }
+      setLoadingDataVisible(false);
+    } else {
+      if (newAreaLayer) {
+        newAreaLayer.setMap(null);
+      } else {
+        handleOnReadFile();
+      }
+      setLoadingDataVisible(true);
+    }
+  };
   return (
     <PageContainer pageHeaderRender={false} className={styles.homePage}>
       {!tabsVisible && false && (
@@ -2156,12 +2212,17 @@ export default (): React.ReactNode => {
         </Form>
       </Modal>
       <div className={styles.radioContainer}>
-        <Radio.Group onChange={handleOnSetRadioValue} value={radioValue} buttonStyle="solid">
-          <Space direction="vertical">
-            <Radio.Button value={1}>道路等级</Radio.Button>
-            <Radio.Button value={2}>道路饱和度</Radio.Button>
-          </Space>
-        </Radio.Group>
+        <Space direction="vertical">
+          <Button type={loadingDataVisible ? 'primary' : 'default'} onClick={handleOnLoadData}>
+            道发交通量
+          </Button>
+          <Radio.Group onChange={handleOnSetRadioValue} value={radioValue} buttonStyle="solid">
+            <Space direction="vertical">
+              <Radio.Button value={1}>道路等级</Radio.Button>
+              <Radio.Button value={2}>道路饱和度</Radio.Button>
+            </Space>
+          </Radio.Group>
+        </Space>
       </div>
       {roadLevelRef.current && (
         <div className={styles.colorBox}>
