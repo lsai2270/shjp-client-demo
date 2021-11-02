@@ -108,7 +108,7 @@ export default (): React.ReactNode => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [radioValue, setRadioValue] = useState<any>(1); // 道路等级
-  const [radioValue1, setRadioValue1] = useState("1");
+  const [radioValue1, setRadioValue1] = useState('1');
   const [allLinksData, setAllLinksData] = useState<any>([]); // 道路等级
   const [currentAreaData, setCurrentAreaData] = useState<any>(null); // 道路等级
   // const [roadLevelVisible, setRoadLevelVisible] = useState<boolean>(true); // 道路等级
@@ -251,7 +251,7 @@ export default (): React.ReactNode => {
       // handleOnMouseTool(); // 绘制工具
       // handleOnMapEvent(); // 地图事件
       hanldeOnGetSurround();
-      handleOnReadFile()
+      handleOnReadFile();
     }
   }, [map, AMap]);
   useEffect(() => {
@@ -272,11 +272,12 @@ export default (): React.ReactNode => {
       ]);
     }
   }, [currentLinkData]);
-  const handleOnReadFile = () =>{
-    axios('/a.txt').then(res=>{
-      let areaData: any = res.data.split("\r\n");
-      areaData = areaData.map((item:any)=>{
-        let newData = item.split("\t");
+  const handleOnReadFile = () => {
+    axios('/a.txt').then((res) => {
+      console.log('res', res);
+      let areaData: any = res.data.split('\n');
+      areaData = areaData.map((item: any) => {
+        let newData = item.split('\t');
 
         return {
           location: newData[0].split(','),
@@ -288,26 +289,26 @@ export default (): React.ReactNode => {
           wnAttraction: newData[6],
           production: newData[7],
           attraction: newData[8],
-        }
-      })
-      // console.log('====================================');
-      // console.log("areaData",areaData);
-      // console.log('====================================');
+        };
+      });
+      console.log('====================================');
+      console.log('areaData', areaData);
+      console.log('====================================');
       // handleOnDrawAreaLayer(areaData)
       handleOnDistrictCluster(areaData);
-    })
-  }
-  const handleOnInitCharts = (data: any) =>{
+    });
+  };
+  const handleOnInitCharts = (data: any) => {
     const adom: any = document.querySelector('#paBar');
     var myChart = echarts.init(adom);
     // 绘制图表
-    myChart.setOption({   
+    myChart.setOption({
       xAxis: {
         type: 'category',
-        data: ["交通产生量",'交通吸引量']
+        data: ['交通产生量', '交通吸引量'],
       },
       yAxis: {
-        type: 'value'
+        type: 'value',
       },
       series: [
         {
@@ -315,32 +316,32 @@ export default (): React.ReactNode => {
             {
               value: data[0],
               itemStyle: {
-                color: '#13c2c2'
-              }
+                color: '#13c2c2',
+              },
             },
             {
               value: data[1],
               itemStyle: {
-                color: '#73d13d'
-              }
-            }
+                color: '#73d13d',
+              },
+            },
           ],
-          type: 'bar'
-        }
-      ]
+          type: 'bar',
+        },
+      ],
     });
-  }
-   // 区域下项目点击事件
-   const handleOnPointsClick = (ev: any, point: any) => {
+  };
+  // 区域下项目点击事件
+  const handleOnPointsClick = (ev: any, point: any) => {
     // console.log('ev', ev);
     // console.log("point",point);
     const { dataItem } = point.data;
     setCurrentAreaData(dataItem);
     setIsModalVisible1(true);
     setTimeout(() => {
-      handleOnInitCharts([dataItem.production,dataItem.attraction]);
+      handleOnInitCharts([dataItem.production, dataItem.attraction]);
     }, 100);
-    
+
     // const position = ev.originalEvent.pos;
     // const { data } = ev.clusterData[0];
     // const infoWindow = new AMapUI.SimpleInfoWindow({
@@ -368,12 +369,13 @@ export default (): React.ReactNode => {
         renderOptions: {
           //点的样式
           pointStyle: {
-            content: PointSimplifier.Render.Canvas.getImageContent(
-              '//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png',
-            ),
-            width: 20,
+            // content: PointSimplifier.Render.Canvas.getImageContent(
+            //   '//webapi.amap.com/theme/v1.3/markers/b/mark_bs.png',
+            // ),
+            content: PointSimplifier.Render.Canvas.getImageContent('/img/1.png'),
+            width: 32,
             height: 32,
-            cursor: "pointer",
+            cursor: 'pointer',
             // fillStyle: 'rgba(153, 0, 153, 0.38)'
           },
           //鼠标hover时的title信息
@@ -813,7 +815,7 @@ export default (): React.ReactNode => {
     event.target.render();
   };
   // 小区图层
-  const handleOnDrawAreaLayer = (data:any) =>{
+  const handleOnDrawAreaLayer = (data: any) => {
     var vl = new Loca.IconLayer({
       map: map,
       name: 'areaLayer',
@@ -821,16 +823,16 @@ export default (): React.ReactNode => {
       zIndex: 502,
     });
     vl.setData(data, {
-      lnglat: 'location'
+      lnglat: 'location',
     });
     vl.setOptions({
-      source: "/img/1.png",
+      source: '/img/1.png',
       style: {
-        size: 32
-      }
+        size: 32,
+      },
     });
     vl.render();
-  }
+  };
   // 节点图层
   const handleOnDrawPointLayer = () => {
     let data: any[] = [];
@@ -2050,25 +2052,25 @@ export default (): React.ReactNode => {
   };
   const handleCancel1 = () => {
     setIsModalVisible1(false);
-    setRadioValue1("1");
+    setRadioValue1('1');
   };
   const handleOnGetLinksSaturation = (data: any) => {
     getLinkSaturation(data).then((res) => {
       console.log('res', res);
     });
   };
-  const hanldeOnSetRadio = (e:any) =>{
-    if(e.target.value==1){
-      handleOnInitCharts([currentAreaData.production,currentAreaData.attraction]);
-    }else if(e.target.value==2){
-      handleOnInitCharts([currentAreaData.nnProduction,currentAreaData.nnAttraction]);
-    }else if(e.target.value==3){
-      handleOnInitCharts([currentAreaData.nwProduction,currentAreaData.nwAttraction]);
-    }else if(e.target.value==4){
-      handleOnInitCharts([currentAreaData.wnProduction,currentAreaData.wnAttraction]);
+  const hanldeOnSetRadio = (e: any) => {
+    if (e.target.value == 1) {
+      handleOnInitCharts([currentAreaData.production, currentAreaData.attraction]);
+    } else if (e.target.value == 2) {
+      handleOnInitCharts([currentAreaData.nnProduction, currentAreaData.nnAttraction]);
+    } else if (e.target.value == 3) {
+      handleOnInitCharts([currentAreaData.nwProduction, currentAreaData.nwAttraction]);
+    } else if (e.target.value == 4) {
+      handleOnInitCharts([currentAreaData.wnProduction, currentAreaData.wnAttraction]);
     }
-    setRadioValue1(e.target.value)
-  }
+    setRadioValue1(e.target.value);
+  };
   return (
     <PageContainer pageHeaderRender={false} className={styles.homePage}>
       {!tabsVisible && false && (
@@ -2108,15 +2110,15 @@ export default (): React.ReactNode => {
         </div>
       )}
       <Modal title="小区交通量" visible={isModalVisible1} footer={null} onCancel={handleCancel1}>
-        <div style={{textAlign:'center'}}>
-          <Radio.Group value={radioValue1} buttonStyle="solid" onChange={hanldeOnSetRadio} >
+        <div style={{ textAlign: 'center' }}>
+          <Radio.Group value={radioValue1} buttonStyle="solid" onChange={hanldeOnSetRadio}>
             <Radio.Button value="1">交通总量</Radio.Button>
             <Radio.Button value="2">内内交通量</Radio.Button>
             <Radio.Button value="3">内外交通量</Radio.Button>
             <Radio.Button value="4">外内交通量</Radio.Button>
           </Radio.Group>
         </div>
-        <div id="paBar" style={{width:"500px",height:'300px'}}></div>
+        <div id="paBar" style={{ width: '500px', height: '300px' }}></div>
       </Modal>
       <Modal title="道路信息" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
         <Form
