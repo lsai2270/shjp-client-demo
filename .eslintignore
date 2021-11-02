@@ -10,3 +10,6 @@ pages/
 components
 layouts
 /src/tools.ts
+tests
+/src/utils
+/src/service-worker.js

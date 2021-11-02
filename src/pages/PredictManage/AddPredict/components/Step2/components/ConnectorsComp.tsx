@@ -35,14 +35,8 @@ interface ConnectorsCompProps {
 const ConnectorsComp: React.FC<ConnectorsCompProps> = (props) => {
   const [form] = Form.useForm();
   const { validateFields } = form;
-  const {
-    connectorsData,
-    setConnectorsData,
-    setTabsKey,
-    nodesData,
-    zonesData,
-    currentProject,
-  } = props;
+  const { connectorsData, setConnectorsData, setTabsKey, nodesData, zonesData, currentProject } =
+    props;
   const [railway, setRailway] = useState([]);
   const [currentRowIndex, setCurrentRowIndex] = useState<any>(undefined);
 
