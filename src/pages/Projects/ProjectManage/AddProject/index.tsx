@@ -116,11 +116,12 @@ export default (): React.ReactNode => {
   const [radioValue1, setRadioValue1] = useState('1');
   const [allLinksData, setAllLinksData] = useState<any>([]); // 道路等级
   const [currentAreaData, setCurrentAreaData] = useState<any>(null); // 道路等级
-  // const [roadLevelVisible, setRoadLevelVisible] = useState<boolean>(true); // 道路等级
-  // const [saturationVisible, setSaturationVisible] = useState<boolean>(false); // 道路等级
-  const roadLevelRef: any = useRef(true);
+  const [roadLevelVisible, setRoadLevelVisible] = useState<boolean>(false); // 道路等级
+  const [saturationVisible, setSaturationVisible] = useState<boolean>(false); // 道路等级
+  const roadLevelRef: any = useRef(false);
   const saturationRef: any = useRef(false);
   const currenLineRef: any = useRef(null);
+  const overlayGroupsRef: any = useRef([]);
   const linksIds = [
     'epmdUtI3hSZ6LfEnc5_mZ',
     'OinMjWVf_s_scbZmkTZzF',
@@ -279,7 +280,7 @@ export default (): React.ReactNode => {
   }, [currentLinkData]);
   const handleOnReadFile = () => {
     axios('/a.txt').then((res) => {
-      console.log('res', res);
+      // console.log('res', res);
       let areaData: any = res.data.split('\n');
       areaData = areaData
         .map((item: any) => {
@@ -844,33 +845,73 @@ export default (): React.ReactNode => {
   };
   // 小区图层
   const handleOnDrawAreaLayer = (data: any) => {
-    var vl = new Loca.IconLayer({
-      map: map,
-      name: 'areaLayer',
-      eventSupport: true,
-      zIndex: 152,
+    const markers: any = [];
+    data.forEach((item: any, index: any) => {
+      var marker = new AMapUI.SimpleMarker({
+        // map: map,
+        position: item.location,
+        iconStyle: {
+          src: '/img/1.png',
+          style: {
+            width: '32px',
+            height: '32px',
+          },
+        },
+        extData: {
+          ...item,
+          id: index + 1,
+        },
+        direction: 'top', //设置文本标注方位
+        label: {
+          content: `<div class="markerContainer">
+            <div><span>总产生量:</span><span>${item.production}</span></div>
+            <div><span>总吸引量:</span><span>${item.attraction}</span></div>
+          </div>`,
+          offset: new AMap.Pixel(-20, -35),
+        },
+      });
+      markers.push(marker);
+      marker.on('click', function (e: any) {
+        // console.log("e===>",e);
+        const objData = e.target.w.extData;
+        setCurrentAreaData(objData);
+        setIsModalVisible1(true);
+        setTimeout(() => {
+          handleOnInitCharts([objData.production, objData.attraction]);
+        }, 100);
+      });
     });
-    vl.setData(data, {
-      lnglat: 'location',
-    });
-    vl.setOptions({
-      source: '/img/1.png',
-      style: {
-        size: 32,
-      },
-    });
-    vl.render();
-    vl.on('click', function (event: any) {
-      // console.log('Click target: ', event.target) // 触发click事件的元素
-      // console.log('Event type: ', event.type) // 事件名称
-      // console.log('Raw Event: ', event.originalEvent) // 原始DomEvent事件
-      // console.log('point Raw data: ', event.rawData); // 触发元素对应的原始数据
-      setCurrentAreaData(event.rawData);
-      setIsModalVisible1(true);
-      setTimeout(() => {
-        handleOnInitCharts([event.rawData.production, event.rawData.attraction]);
-      }, 100);
-    });
+    const overlayGroups = new AMap.OverlayGroup(markers);
+    overlayGroupsRef.current = overlayGroups;
+    map.add(overlayGroups);
+    // console.log("markers",markers);
+    // var vl = new Loca.IconLayer({
+    //   map: map,
+    //   name: 'areaLayer',
+    //   eventSupport: true,
+    //   zIndex: 152,
+    // });
+    // vl.setData(data, {
+    //   lnglat: 'location',
+    // });
+    // vl.setOptions({
+    //   source: '/img/1.png',
+    //   style: {
+    //     size: 32,
+    //   },
+    // });
+    // vl.render();
+    // vl.on('click', function (event: any) {
+    //   // console.log('Click target: ', event.target) // 触发click事件的元素
+    //   // console.log('Event type: ', event.type) // 事件名称
+    //   // console.log('Raw Event: ', event.originalEvent) // 原始DomEvent事件
+    //   // console.log('point Raw data: ', event.rawData); // 触发元素对应的原始数据
+    //   setCurrentAreaData(event.rawData);
+    //   setIsModalVisible1(true);
+    //   setTimeout(() => {
+    //     handleOnInitCharts([event.rawData.production, event.rawData.attraction]);
+    //   }, 100);
+    // });
   };
   // 节点图层
   const handleOnDrawPointLayer = () => {
@@ -1038,25 +1079,25 @@ export default (): React.ReactNode => {
           }
           if (saturationRef.current) {
             if (getServiceLevel(res.value.saturation) == 'A') {
-              return '#52c41a';
+              return '#009300';
             }
             if (getServiceLevel(res.value.saturation) == 'B') {
-              return '#092b00';
+              return '#ffd700';
             }
             if (getServiceLevel(res.value.saturation) == 'C') {
-              return '#ad8b00';
+              return '#ff9720';
             }
             if (getServiceLevel(res.value.saturation) == 'D') {
-              return '#fff566';
+              return '#be3f94';
             }
             if (getServiceLevel(res.value.saturation) == 'E') {
-              return '#fa541c';
+              return '#8b0000';
             }
             if (getServiceLevel(res.value.saturation) == 'F') {
-              return '#cf1322';
+              return '#cd1323';
             }
           }
-          return '#ff0000';
+          return 'green';
         },
       },
       selectStyle: {
@@ -2060,6 +2101,42 @@ export default (): React.ReactNode => {
     lineLayer.render();
     setRadioValue(e.target.value);
   };
+  const handleOnBtnChange = (type: any) => {
+    if (type == 1) {
+      if (roadLevelRef.current) {
+        setRoadLevelVisible(false);
+        roadLevelRef.current = false;
+      } else {
+        setRoadLevelVisible(true);
+        roadLevelRef.current = true;
+        if (saturationVisible) {
+          setSaturationVisible(false);
+          saturationRef.current = false;
+        }
+      }
+    } else {
+      if (saturationRef.current) {
+        setSaturationVisible(false);
+        saturationRef.current = false;
+      } else {
+        setSaturationVisible(true);
+        saturationRef.current = true;
+        if (roadLevelVisible) {
+          setRoadLevelVisible(false);
+          roadLevelRef.current = false;
+        }
+      }
+    }
+    let layers = map.getLayers();
+    let lineLayer = layers.filter((item: any) => item.get('name') == 'lineLayer')[0];
+    let allLinesData = lineLayer._dataSet.getData() || [];
+    // console.log("allLinesData",allLinesData);
+    // lineLayer.setData(allLinesData, {
+    //   type: 'json',
+    //   lnglat: 'lnglat',
+    // });
+    lineLayer.render();
+  };
   const handleOk = async () => {
     const formData = await form.validateFields();
     const { linkId } = currenLineRef.current;
@@ -2114,16 +2191,21 @@ export default (): React.ReactNode => {
     let layers = map.getLayers();
     let newAreaLayer = layers.filter((item: any) => item.get('name') == 'areaLayer')[0];
     if (loadingDataVisible) {
-      if (newAreaLayer) {
-        newAreaLayer.setMap(null);
-      }
+      // map.getOverlays()
+      map.remove(overlayGroupsRef.current);
+      // if (newAreaLayer) {
+      //   newAreaLayer.setMap(null);
+      //   map.clearOverlays()
+      // }
       setLoadingDataVisible(false);
     } else {
-      if (newAreaLayer) {
-        newAreaLayer.setMap(null);
-      } else {
-        handleOnReadFile();
-      }
+      handleOnReadFile();
+      // if (newAreaLayer) {
+      //   newAreaLayer.setMap(null);
+      //   map.clearOverlays()
+      // } else {
+      //   handleOnReadFile();
+      // }
       setLoadingDataVisible(true);
     }
   };
@@ -2214,14 +2296,26 @@ export default (): React.ReactNode => {
       <div className={styles.radioContainer}>
         <Space direction="vertical">
           <Button type={loadingDataVisible ? 'primary' : 'default'} onClick={handleOnLoadData}>
-            道发交通量
+            到发交通量
           </Button>
-          <Radio.Group onChange={handleOnSetRadioValue} value={radioValue} buttonStyle="solid">
+          <Button
+            type={roadLevelVisible ? 'primary' : 'default'}
+            onClick={() => handleOnBtnChange('1')}
+          >
+            道路等级
+          </Button>
+          <Button
+            type={saturationVisible ? 'primary' : 'default'}
+            onClick={() => handleOnBtnChange('2')}
+          >
+            道路饱和度
+          </Button>
+          {/* <Radio.Group onChange={handleOnSetRadioValue} value={radioValue} buttonStyle="solid">
             <Space direction="vertical">
               <Radio.Button value={1}>道路等级</Radio.Button>
               <Radio.Button value={2}>道路饱和度</Radio.Button>
             </Space>
-          </Radio.Group>
+          </Radio.Group> */}
         </Space>
       </div>
       {roadLevelRef.current && (
