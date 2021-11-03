@@ -118,10 +118,12 @@ export default (): React.ReactNode => {
   const [currentAreaData, setCurrentAreaData] = useState<any>(null); // 道路等级
   const [roadLevelVisible, setRoadLevelVisible] = useState<boolean>(false); // 道路等级
   const [saturationVisible, setSaturationVisible] = useState<boolean>(false); // 道路等级
+  const [adcodeFlag, setAdcodeFlag] = useState<boolean>(false);
   const roadLevelRef: any = useRef(false);
   const saturationRef: any = useRef(false);
   const currenLineRef: any = useRef(null);
   const overlayGroupsRef: any = useRef([]);
+  const paRef: any = useRef(false);
   const linksIds = [
     'epmdUtI3hSZ6LfEnc5_mZ',
     'OinMjWVf_s_scbZmkTZzF',
@@ -238,12 +240,17 @@ export default (): React.ReactNode => {
     }
   }, [stepNum, tabsVisible]);
   useEffect(() => {
+    if (map) {
+      map.destroy();
+      setMap(null);
+      setAMap(null);
+    }
     handleOnMapInit();
     // getDictDataAll();
-    return () => {
-      mouseTool?.close();
-    };
-  }, []);
+    // return () => {
+    //   mouseTool?.close();
+    // };
+  }, [adcodeFlag]);
   useEffect(() => {
     if (map && AMap) {
       // handleOnSearch();
@@ -279,25 +286,25 @@ export default (): React.ReactNode => {
     }
   }, [currentLinkData]);
   const handleOnReadFile = () => {
-    axios('/b.txt').then((res) => {
+    let parmas = adcodeFlag ? '/a.txt' : '/b.txt';
+    axios(parmas).then((res) => {
       // console.log('res', res);
       let areaData: any = res.data.split('\n');
-      areaData = areaData
-        .map((item: any) => {
-          let newData = item.split('\t');
-          return {
-            location: newData[0].split(','),
-            nnProduction: newData[1],
-            nnAttraction: newData[2],
-            nwProduction: newData[3],
-            nwAttraction: newData[4],
-            wnProduction: newData[5],
-            wnAttraction: newData[6],
-            production: newData[7],
-            attraction: newData[8],
-          };
-        })
-        .filter((item: any) => item.production != 0 && item.attraction != 0);
+      areaData = areaData.map((item: any) => {
+        let newData = item.split('\t');
+        return {
+          location: newData[0].split(','),
+          nnProduction: newData[1],
+          nnAttraction: newData[2],
+          nwProduction: newData[3],
+          nwAttraction: newData[4],
+          wnProduction: newData[5],
+          wnAttraction: newData[6],
+          production: newData[7],
+          attraction: newData[8],
+        };
+      });
+      // .filter((item: any) => item.production != 0 && item.attraction != 0);
       // .filter(
       //   (item: any) =>
       //     minLng < item.location[0] &&
@@ -330,7 +337,7 @@ export default (): React.ReactNode => {
             {
               value: data[0],
               itemStyle: {
-                color: '#13c2c2',
+                color: '#07E8E4',
               },
             },
             {
@@ -604,7 +611,7 @@ export default (): React.ReactNode => {
   // };
   // 获取道路信息
   const hanldeOnGetSurround = async (params?: any) => {
-    const res = await getAllRoads({ adcode: 310101 });
+    const res = await getAllRoads({ adcode: adcodeFlag ? 310114 : 310101 });
     console.log(res);
     const roadInfos = res.data.data;
     let labelsData: any[] = [];
@@ -637,28 +644,18 @@ export default (): React.ReactNode => {
       newRoadInfo[`${item._id}`] = item;
     });
     // console.log('nodesData-------->', nodesData);
-    nodesData = lodash.uniqBy(nodesData, 'nodeId');
-    // console.log(
-    //   'minLat',
-    //   lodash.minBy(nodesData, (o) => o.center.lat),
-    // );
-    // console.log(
-    //   'maxLat',
-    //   lodash.maxBy(nodesData, (o) => o.center.lat),
-    // );
-    // console.log(
-    //   'minLng',
-    //   lodash.minBy(nodesData, (o) => o.center.lng),
-    // );
-    // console.log(
-    //   'maxLng',
-    //   lodash.maxBy(nodesData, (o) => o.center.lng),
-    // );
+    // nodesData = lodash.uniqBy(nodesData, 'nodeId');
+    const minLatObj = lodash.minBy(nodesData, (o: any) => o.center.lat);
+    const maxLatObj = lodash.maxBy(nodesData, (o: any) => o.center.lat);
+    const minLngObj = lodash.minBy(nodesData, (o: any) => o.center.lng);
+    const maxLngObj = lodash.maxBy(nodesData, (o: any) => o.center.lng);
+    // console.log([(minLngObj.center.lng+maxLngObj.center.lng)/2,(minLatObj.center.lat+maxLatObj.center.lat)/2]);
+    // map.setCenter([(minLngObj.center.lng+maxLngObj.center.lng)/2,(minLatObj.center.lat+maxLatObj.center.lat)/2]);
     getLinkSaturation({
       // linkIds: linksIds,
       startTime: '2021-4-12 00:00:00',
       endTime: '2021-4-12 00:20:00',
-      adcode: 310101,
+      adcode: adcodeFlag ? 310114 : 310101,
     }).then((res) => {
       // console.log('res', res);
       linksData = linksData.map((item: any) => {
@@ -711,7 +708,8 @@ export default (): React.ReactNode => {
     // console.log('Loca', Loca);
     try {
       let newMap = new newAMap.Map('container', {
-        center: [121.2761, 31.3512745], //中心点坐标
+        // center: [121.2761, 31.3512745], //中心点坐标
+        center: adcodeFlag ? [121.47633400000001, 31.2383715] : [121.2761, 31.3512745], //中心点坐标
         zoom: 14, //默认地图缩放级别,
         // zoomEnable: false,
         // dragEnable: false,
@@ -719,7 +717,7 @@ export default (): React.ReactNode => {
         zIndex: 15,
         mapStyle: 'amap://styles/whitesmoke', //设置地图的显示样式
       });
-      newMap.addControl(new newAMap.ToolBar());
+      // newMap.addControl(new newAMap.ToolBar());
       window.map = newMap;
       setMap(() => newMap);
       setAMap(() => newAMap);
@@ -846,47 +844,50 @@ export default (): React.ReactNode => {
   };
   // 小区图层
   const handleOnDrawAreaLayer = (data: any) => {
-    const markers: any = [];
-    data.forEach((item: any, index: any) => {
-      var marker = new AMapUI.SimpleMarker({
-        // map: map,
-        position: item.location,
-        iconStyle: {
-          src: '/img/1.png',
-          style: {
-            width: '32px',
-            height: '32px',
-          },
-        },
-        extData: {
-          ...item,
-          id: index + 1,
-        },
-        direction: 'top', //设置文本标注方位
-        label: {
-          content: `<div class="markerContainer">
-            <div><span>总产生量:</span><span>${item.production}</span></div>
-            <div><span>总吸引量:</span><span>${item.attraction}</span></div>
-          </div>`,
-          offset: new AMap.Pixel(-20, -35),
-        },
-      });
-      markers.push(marker);
-      marker.on('click', function (e: any) {
-        // console.log("e===>",e);
-        const objData = e.target.w.extData;
-        setCurrentAreaData(objData);
-        setIsModalVisible1(true);
-        setTimeout(() => {
-          handleOnInitCharts([objData.production, objData.attraction]);
-        }, 100);
-      });
-    });
-    console.log('markers===>', markers);
-    const overlayGroups = new AMap.OverlayGroup(markers);
-    overlayGroupsRef.current = overlayGroups;
-    map.add(overlayGroups);
+    // console.log("data",data);
+
+    // const markers: any = [];
+    // data.forEach((item: any, index: any) => {
+    //   var marker = new AMapUI.SimpleMarker({
+    //     // map: map,
+    //     position: item.location,
+    //     iconStyle: {
+    //       src: '/img/1.png',
+    //       style: {
+    //         width: '32px',
+    //         height: '32px',
+    //       },
+    //     },
+    //     extData: {
+    //       ...item,
+    //       id: index + 1,
+    //     },
+    //     direction: 'top', //设置文本标注方位
+    //     label: {
+    //       content: `<div class="markerContainer">
+    //         <div><span>总产生量:</span><span>${item.production}</span></div>
+    //         <div><span>总吸引量:</span><span>${item.attraction}</span></div>
+    //       </div>`,
+    //       offset: new AMap.Pixel(-20, -35),
+    //     },
+    //   });
+    //   markers.push(marker);
+    //   marker.on('click', function (e: any) {
+    //     // console.log("e===>",e);
+    //     const objData = e.target.w.extData;
+    //     setCurrentAreaData(objData);
+    //     setIsModalVisible1(true);
+    //     setTimeout(() => {
+    //       handleOnInitCharts([objData.production, objData.attraction]);
+    //     }, 100);
+    //   });
+    // });
+    // console.log('markers===>', markers);
+    // const overlayGroups = new AMap.OverlayGroup(markers);
+    // overlayGroupsRef.current = overlayGroups;
+    // map.add(overlayGroups);
     // console.log("markers",markers);
+    /*----------------------------------------------*/
     // var vl = new Loca.IconLayer({
     //   map: map,
     //   name: 'areaLayer',
@@ -913,6 +914,74 @@ export default (): React.ReactNode => {
     //   setTimeout(() => {
     //     handleOnInitCharts([event.rawData.production, event.rawData.attraction]);
     //   }, 100);
+    // });
+    /*----------------------------------------------*/
+    var vl = new Loca.ScatterPointLayer({
+      map: map,
+      name: 'areaLayer',
+      eventSupport: true,
+      zIndex: 152,
+    });
+    vl.setData(data, {
+      lnglat: 'location',
+    });
+    vl.setOptions({
+      unit: 'px',
+      style: {
+        // 根据车辆类型设定不同半径
+        radius: function (obj: any) {
+          var value = obj.value;
+          if (paRef.current) {
+            return value.attraction / 25 < 3 ? 3 : value.attraction / 25;
+          }
+          return value.production / 25 < 3 ? 3 : value.production / 25;
+        },
+        height: 0,
+        // 根据车辆类型设定不同填充颜色
+        color: function (obj: any) {
+          var value = obj.value;
+          if (paRef.current) {
+            return '#07E8E4';
+          }
+          return '#73d13d';
+        },
+        opacity: 1,
+      },
+    });
+    vl.render();
+    vl.on('click', function (event: any) {
+      // console.log('Click target: ', event.target) // 触发click事件的元素
+      // console.log('Event type: ', event.type) // 事件名称
+      // console.log('Raw Event: ', event.originalEvent) // 原始DomEvent事件
+      // console.log('point Raw data: ', event.rawData); // 触发元素对应的原始数据
+      setCurrentAreaData(event.rawData);
+      setIsModalVisible1(true);
+      setTimeout(() => {
+        handleOnInitCharts([event.rawData.production, event.rawData.attraction]);
+      }, 100);
+    });
+    var infoWindow: any;
+    // vl.on('mousemove', function (ev: any) {
+    //   // 事件类型
+    //   var type = ev.type;
+    //   // 当前元素的原始数据
+    //   var rawData = ev.rawData;
+    //   console.log("rawData",rawData);
+    //   // 原始鼠标事件
+    //   var originalEvent = ev.originalEvent;
+    //   infoWindow =  new AMapUI.SimpleInfoWindow({
+    //     position: rawData.location,
+    //     offset: new AMap.Pixel(0, -20),
+    //     infoTitle: "小区出行量",
+    //     infoBody: `<div class="markerContainer">
+    //       <div><span>总产生量:</span><span>${rawData.production}</span></div>
+    //       <div><span>总吸引量:</span><span>${rawData.attraction}</span></div>
+    //     </div>`,
+    //   });
+    //   infoWindow.open(map);
+    // });
+    // vl.on('mouseleave', function (ev:any) {
+    //   infoWindow.close();
     // });
   };
   // 节点图层
@@ -2194,9 +2263,9 @@ export default (): React.ReactNode => {
     let newAreaLayer = layers.filter((item: any) => item.get('name') == 'areaLayer')[0];
     if (loadingDataVisible) {
       // map.getOverlays()
-      map.remove(overlayGroupsRef.current);
+      // map.remove(overlayGroupsRef.current);
       // if (newAreaLayer) {
-      //   newAreaLayer.setMap(null);
+      newAreaLayer.setMap(null);
       //   map.clearOverlays()
       // }
       setLoadingDataVisible(false);
@@ -2209,6 +2278,24 @@ export default (): React.ReactNode => {
       //   handleOnReadFile();
       // }
       setLoadingDataVisible(true);
+    }
+  };
+  const handleOnSetRadioValue1 = (e: any) => {
+    if (e.target.value == 1) {
+      paRef.current = false;
+    } else if (e.target.value == 2) {
+      paRef.current = true;
+    }
+    let layers = map.getLayers();
+    let newAreaLayer = layers.filter((item: any) => item.get('name') == 'areaLayer')[0];
+    newAreaLayer.render();
+    setRadioValue(e.target.value);
+  };
+  const handleOnLoadAreaData = () => {
+    if (adcodeFlag) {
+      setAdcodeFlag(false);
+    } else {
+      setAdcodeFlag(true);
     }
   };
   return (
@@ -2297,16 +2384,41 @@ export default (): React.ReactNode => {
       </Modal>
       <div className={styles.radioContainer}>
         <Space direction="vertical">
-          <Button type={loadingDataVisible ? 'primary' : 'default'} onClick={handleOnLoadData}>
-            到发交通量
+          <Button
+            type={adcodeFlag ? 'primary' : 'default'}
+            style={{ width: '110px' }}
+            onClick={handleOnLoadAreaData}
+          >
+            {adcodeFlag ? '黄浦区' : '嘉定区'}
           </Button>
           <Button
+            type={loadingDataVisible ? 'primary' : 'default'}
+            style={{ width: '110px' }}
+            onClick={handleOnLoadData}
+          >
+            到发交通量
+          </Button>
+          {loadingDataVisible && (
+            <Radio.Group onChange={handleOnSetRadioValue1} value={radioValue} buttonStyle="solid">
+              <Space direction="vertical">
+                <Radio.Button style={{ width: '110px' }} value={1}>
+                  交通产生量
+                </Radio.Button>
+                <Radio.Button style={{ width: '110px' }} value={2}>
+                  交通吸引量
+                </Radio.Button>
+              </Space>
+            </Radio.Group>
+          )}
+          <Button
+            style={{ width: '110px' }}
             type={roadLevelVisible ? 'primary' : 'default'}
             onClick={() => handleOnBtnChange('1')}
           >
             道路等级
           </Button>
           <Button
+            style={{ width: '110px' }}
             type={saturationVisible ? 'primary' : 'default'}
             onClick={() => handleOnBtnChange('2')}
           >
