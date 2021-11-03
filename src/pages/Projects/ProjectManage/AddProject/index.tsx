@@ -279,7 +279,7 @@ export default (): React.ReactNode => {
     }
   }, [currentLinkData]);
   const handleOnReadFile = () => {
-    axios('/a.txt').then((res) => {
+    axios('/b.txt').then((res) => {
       // console.log('res', res);
       let areaData: any = res.data.split('\n');
       areaData = areaData
@@ -297,13 +297,14 @@ export default (): React.ReactNode => {
             attraction: newData[8],
           };
         })
-        .filter(
-          (item: any) =>
-            minLng < item.location[0] &&
-            item.location[0] < maxLng &&
-            minLat < item.location[1] &&
-            item.location[1] < maxLat,
-        );
+        .filter((item: any) => item.production != 0 && item.attraction != 0);
+      // .filter(
+      //   (item: any) =>
+      //     minLng < item.location[0] &&
+      //     item.location[0] < maxLng &&
+      //     minLat < item.location[1] &&
+      //     item.location[1] < maxLat,
+      // );
       // console.log('====================================');
       // console.log('areaData', areaData);
       // console.log('====================================');
@@ -603,7 +604,7 @@ export default (): React.ReactNode => {
   // };
   // 获取道路信息
   const hanldeOnGetSurround = async (params?: any) => {
-    const res = await getAllRoads({ adcode: 310114 });
+    const res = await getAllRoads({ adcode: 310101 });
     console.log(res);
     const roadInfos = res.data.data;
     let labelsData: any[] = [];
@@ -637,27 +638,27 @@ export default (): React.ReactNode => {
     });
     // console.log('nodesData-------->', nodesData);
     nodesData = lodash.uniqBy(nodesData, 'nodeId');
-    console.log(
-      'minLat',
-      lodash.minBy(nodesData, (o) => o.center.lat),
-    );
-    console.log(
-      'maxLat',
-      lodash.maxBy(nodesData, (o) => o.center.lat),
-    );
-    console.log(
-      'minLng',
-      lodash.minBy(nodesData, (o) => o.center.lng),
-    );
-    console.log(
-      'maxLng',
-      lodash.maxBy(nodesData, (o) => o.center.lng),
-    );
+    // console.log(
+    //   'minLat',
+    //   lodash.minBy(nodesData, (o) => o.center.lat),
+    // );
+    // console.log(
+    //   'maxLat',
+    //   lodash.maxBy(nodesData, (o) => o.center.lat),
+    // );
+    // console.log(
+    //   'minLng',
+    //   lodash.minBy(nodesData, (o) => o.center.lng),
+    // );
+    // console.log(
+    //   'maxLng',
+    //   lodash.maxBy(nodesData, (o) => o.center.lng),
+    // );
     getLinkSaturation({
       // linkIds: linksIds,
       startTime: '2021-4-12 00:00:00',
       endTime: '2021-4-12 00:20:00',
-      adcode: 310114,
+      adcode: 310101,
     }).then((res) => {
       // console.log('res', res);
       linksData = linksData.map((item: any) => {
@@ -710,8 +711,8 @@ export default (): React.ReactNode => {
     // console.log('Loca', Loca);
     try {
       let newMap = new newAMap.Map('container', {
-        center: [121.476646, 31.237171], //中心点坐标
-        zoom: 15, //默认地图缩放级别,
+        center: [121.2761, 31.3512745], //中心点坐标
+        zoom: 14, //默认地图缩放级别,
         // zoomEnable: false,
         // dragEnable: false,
         // scrollWheel: false,
@@ -881,6 +882,7 @@ export default (): React.ReactNode => {
         }, 100);
       });
     });
+    console.log('markers===>', markers);
     const overlayGroups = new AMap.OverlayGroup(markers);
     overlayGroupsRef.current = overlayGroups;
     map.add(overlayGroups);
