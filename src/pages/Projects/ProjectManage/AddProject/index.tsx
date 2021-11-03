@@ -35,7 +35,7 @@ import axios from 'axios';
 import lodash from 'lodash';
 import { getTreeData, getServiceLevel } from '@/tools';
 import { getDictData } from '@/services/projectManage';
-
+import LoadingComp from '@/components/Loading';
 import { Step1Comp, Step2Comp, Step3Comp, Step4Comp, Step5Comp } from './StepComp';
 import { getMapSurround, getRoads } from '@/services/v2/baseCitybit';
 import { getProjectById } from '@/services/v2/project';
@@ -119,6 +119,7 @@ export default (): React.ReactNode => {
   const [roadLevelVisible, setRoadLevelVisible] = useState<boolean>(false); // 道路等级
   const [saturationVisible, setSaturationVisible] = useState<boolean>(false); // 道路等级
   const [adcodeFlag, setAdcodeFlag] = useState<boolean>(false);
+  const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
   const roadLevelRef: any = useRef(false);
   const saturationRef: any = useRef(false);
   const currenLineRef: any = useRef(null);
@@ -286,6 +287,7 @@ export default (): React.ReactNode => {
     }
   }, [currentLinkData]);
   const handleOnReadFile = () => {
+    setLoadingVisible(true);
     let parmas = adcodeFlag ? '/a.txt' : '/b.txt';
     axios(parmas).then((res) => {
       // console.log('res', res);
@@ -960,6 +962,7 @@ export default (): React.ReactNode => {
         handleOnInitCharts([event.rawData.production, event.rawData.attraction]);
       }, 100);
     });
+    setLoadingVisible(false);
     var infoWindow: any;
     // vl.on('mousemove', function (ev: any) {
     //   // 事件类型
@@ -2292,6 +2295,12 @@ export default (): React.ReactNode => {
     setRadioValue(e.target.value);
   };
   const handleOnLoadAreaData = () => {
+    let layers = map.getLayers();
+    let newAreaLayer = layers.filter((item: any) => item.get('name') == 'areaLayer')[0];
+    if (newAreaLayer) {
+      newAreaLayer.setMap(null);
+      setLoadingDataVisible(false);
+    }
     if (adcodeFlag) {
       setAdcodeFlag(false);
     } else {
@@ -2382,6 +2391,7 @@ export default (): React.ReactNode => {
           </Form.Item>
         </Form>
       </Modal>
+      <LoadingComp visible={loadingVisible} />
       <div className={styles.radioContainer}>
         <Space direction="vertical">
           <Button
