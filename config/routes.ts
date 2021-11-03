@@ -34,6 +34,13 @@ export default [
                 component: './Projects/ProjectManage/AddProject',
               },
               {
+                path: '/add',
+                name: '新建',
+                // icon: 'smile',
+                hideInMenu: true,
+                component: './Projects/ProjectManage/AddProject/index1.tsx',
+              },
+              {
                 component: './404',
               },
             ],
