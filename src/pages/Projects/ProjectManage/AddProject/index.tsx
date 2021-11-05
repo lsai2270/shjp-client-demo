@@ -943,9 +943,9 @@ export default (): React.ReactNode => {
         color: function (obj: any) {
           var value = obj.value;
           if (paRef.current) {
-            return '#07E8E4';
+            return '#73d13d';
           }
-          return '#73d13d';
+          return '#07E8E4';
         },
         opacity: 1,
       },
