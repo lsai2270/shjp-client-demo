@@ -39,7 +39,7 @@ import LoadingComp from '@/components/Loading';
 import { Step1Comp, Step2Comp, Step3Comp, Step4Comp, Step5Comp } from './StepComp';
 import { getMapSurround, getRoads } from '@/services/v2/baseCitybit';
 import { getProjectById } from '@/services/v2/project';
-import { getAllRoads, getLinkSaturation } from '@/services/v2/map';
+import { getAllRoads, getLinkSaturation, getLinkRids } from '@/services/v2/map';
 import styles from './index.less';
 
 declare let AMapUI: any;
@@ -1189,7 +1189,12 @@ export default (): React.ReactNode => {
       // console.log('LngLat: ', event.lnglat) // 元素所在经纬度
       // const objPixel = new AMap.Pixel(event.originalEvent.x, event.originalEvent.y - 48);
       // const newLngLat = map.containerToLngLat(objPixel);
+
       const { name, roadClass, flow, saturation, linkId } = event.rawData;
+      getLinkRids(linkId).then((res) => {
+        console.log(linkId + '====>', res.data.data);
+        console.log('===============================>');
+      });
       currenLineRef.current = event.rawData;
       setIsModalVisible(true);
       form.setFieldsValue({
