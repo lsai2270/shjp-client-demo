@@ -655,8 +655,8 @@ export default (): React.ReactNode => {
     // map.setCenter([(minLngObj.center.lng+maxLngObj.center.lng)/2,(minLatObj.center.lat+maxLatObj.center.lat)/2]);
     getLinkSaturation({
       // linkIds: linksIds,
-      startTime: '2021-4-12 00:00:00',
-      endTime: '2021-4-12 00:20:00',
+      startTime: '2021-4-12 07:00:00',
+      endTime: '2021-4-12 12:00:00',
       adcode: adcodeFlag ? 310114 : 310101,
     }).then((res) => {
       // console.log('res', res);
@@ -666,6 +666,7 @@ export default (): React.ReactNode => {
           return {
             ...item,
             saturation: libkObj.linkSaturations[0].saturation,
+            linkSaturations: libkObj.linkSaturations,
           };
         }
         return {
